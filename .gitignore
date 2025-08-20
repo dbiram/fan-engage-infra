@@ -1,0 +1,14 @@
+# compose envs
+.env
+.env.*
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/
+
+# logs
+*.log
+
+# docker artifacts 
+**/.pytest_cache/
