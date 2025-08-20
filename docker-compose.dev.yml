@@ -44,6 +44,7 @@ services:
       mc mb -p local/raw || true &&
       mc mb -p local/frames || true &&
       mc mb -p local/clips || true &&
+      mc mb -p local/detections || true &&
       sleep 2 &&
       echo 'MinIO buckets ready';
       "
@@ -61,6 +62,7 @@ services:
       MINIO_SECURE: "0"
       BUCKET_RAW: raw
       BUCKET_FRAMES: frames
+      BUCKET_DETECTIONS: detections
       CORS_ORIGINS: ${CORS_ORIGINS}
       TZ: ${TZ}
     depends_on:
