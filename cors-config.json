@@ -1,0 +1,32 @@
+{
+  "clips": {
+    "rule": [
+      {
+        "AllowedOrigins": ["http://localhost:3000"],
+        "AllowedMethods": ["GET", "HEAD"],
+        "allowedHeaders": ["*"],
+        "exposeHeaders": []
+      }
+    ]
+  },
+  "raw": {
+    "rule": [
+      {
+        "AllowedOrigins": ["http://localhost:3000"],
+        "AllowedMethods": ["GET", "HEAD"],
+        "allowedHeaders": ["*"],
+        "exposeHeaders": []
+      }
+    ]
+  },
+  "frames": {
+    "rule": [
+      {
+        "AllowedOrigins": ["http://localhost:3000"],
+        "AllowedMethods": ["GET", "HEAD"],
+        "allowedHeaders": ["*"],
+        "exposeHeaders": []
+      }
+    ]
+  }
+}
