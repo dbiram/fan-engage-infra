@@ -45,6 +45,7 @@ services:
       mc mb -p local/frames || true &&
       mc mb -p local/clips || true &&
       mc mb -p local/detections || true &&
+      mc mb -p local/models || true &&
       sleep 2 &&
       echo 'MinIO buckets ready';
       "
@@ -65,11 +66,16 @@ services:
       BUCKET_DETECTIONS: detections
       CORS_ORIGINS: ${CORS_ORIGINS}
       TZ: ${TZ}
+      BUCKET_MODELS: models
+      MODEL_LATEST_META: yolov8n_football/latest.json
+      MODEL_LOCAL_PATH: /models/best.pt
     depends_on:
       postgres: { condition: service_healthy }
       minio: { condition: service_healthy }
       create-buckets: { condition: service_completed_successfully }
     ports: ["8000:8000"]
+    volumes:
+      - api_models:/models
 
   frontend:
     build:
@@ -87,7 +93,27 @@ services:
     depends_on:
       - redis
       - api
+  ml:
+    build:
+      context: ../fan-engage-ml
+      args:
+        TORCH_INDEX_URL: https://download.pytorch.org/whl/nightly/cu128
+    gpus: all
+    environment:
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      BUCKET_MODELS: models
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility
+    depends_on:
+      - minio
+    volumes:
+      - ../datasets/football-players-detection:/data/datasets/football:ro
+      - ml_artifacts:/artifacts
 
 volumes:
   pgdata:
   minio:
+  ml_artifacts:
+  api_models:
