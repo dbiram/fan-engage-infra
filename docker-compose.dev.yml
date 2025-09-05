@@ -45,6 +45,8 @@ services:
       mc mb -p local/frames || true &&
       mc mb -p local/clips || true &&
       mc mb -p local/detections || true &&
+      mc mb -p local/tracks || true &&
+      mc mb -p local/homography || true &&
       mc mb -p local/models || true &&
       sleep 2 &&
       echo 'MinIO buckets ready';
@@ -64,11 +66,17 @@ services:
       BUCKET_RAW: raw
       BUCKET_FRAMES: frames
       BUCKET_DETECTIONS: detections
+      BUCKET_TRACKS: tracks
+      BUCKET_HOMOGRAPHY: homography
       CORS_ORIGINS: ${CORS_ORIGINS}
       TZ: ${TZ}
       BUCKET_MODELS: models
       MODEL_LATEST_META: yolov8n_football/latest.json
       MODEL_LOCAL_PATH: /models/best.pt
+      MAX_SAMPLES_PER_TRACK: ${MAX_SAMPLES_PER_TRACK}
+      USE_UMAP: ${USE_UMAP}
+      UMAP_COMPONENTS: ${UMAP_COMPONENTS}
+      ALPHA_COLOR: ${ALPHA_COLOR}
     depends_on:
       postgres: { condition: service_healthy }
       minio: { condition: service_healthy }
@@ -104,12 +112,16 @@ services:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
       BUCKET_MODELS: models
+      BUCKET_FRAMES: frames
+      BUCKET_DETECTIONS: detections
+      BUCKET_TRACKS: tracks
       NVIDIA_VISIBLE_DEVICES: all
       NVIDIA_DRIVER_CAPABILITIES: compute,utility
     depends_on:
       - minio
     volumes:
       - ../datasets/football-players-detection:/data/datasets/football:ro
+      - ../datasets/pitch-keypoints:/data/datasets/pitch:ro
       - ml_artifacts:/artifacts
 
 volumes:
