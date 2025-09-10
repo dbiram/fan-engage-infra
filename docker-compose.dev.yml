@@ -47,6 +47,7 @@ services:
       mc mb -p local/detections || true &&
       mc mb -p local/tracks || true &&
       mc mb -p local/homography || true &&
+      mc mb -p local/analytics || true &&
       mc mb -p local/models || true &&
       sleep 2 &&
       echo 'MinIO buckets ready';
@@ -68,6 +69,7 @@ services:
       BUCKET_DETECTIONS: detections
       BUCKET_TRACKS: tracks
       BUCKET_HOMOGRAPHY: homography
+      BUCKET_ANALYTICS: analytics
       CORS_ORIGINS: ${CORS_ORIGINS}
       TZ: ${TZ}
       BUCKET_MODELS: models
@@ -77,6 +79,7 @@ services:
       USE_UMAP: ${USE_UMAP}
       UMAP_COMPONENTS: ${UMAP_COMPONENTS}
       ALPHA_COLOR: ${ALPHA_COLOR}
+      HOMOGRAPHY_TARGET: meters
     depends_on:
       postgres: { condition: service_healthy }
       minio: { condition: service_healthy }
