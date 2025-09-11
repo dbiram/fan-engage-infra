@@ -80,6 +80,9 @@ services:
       UMAP_COMPONENTS: ${UMAP_COMPONENTS}
       ALPHA_COLOR: ${ALPHA_COLOR}
       HOMOGRAPHY_TARGET: meters
+      REDIS_URL: redis://redis:6379/0
+      JOBS_DEFAULT_TIMEOUT: "7200"
+      JOBS_MAX_RETRIES: "2"
     depends_on:
       postgres: { condition: service_healthy }
       minio: { condition: service_healthy }
@@ -101,9 +104,32 @@ services:
   workers:
     build:
       context: ../fan-engage-workers
+    command: ["python", "-m", fe_workers.worker]
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      API_INTERNAL_BASE: http://api:8000
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT}
+      MINIO_ACCESS_KEY: ${MINIO_ROOT_USER}
+      MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
+      MINIO_REGION: ${MINIO_REGION}
+      MINIO_SECURE: "0"
+      BUCKET_RAW: raw
+      BUCKET_FRAMES: frames
+      BUCKET_DETECTIONS: detections
+      BUCKET_TRACKS: tracks
+      BUCKET_HOMOGRAPHY: homography
+      BUCKET_ANALYTICS: analytics
+      BUCKET_MODELS: models
+      MODEL_LATEST_META: yolov8n_football/latest.json
+      MODEL_LOCAL_PATH: /models/best.pt
+      BALL_MODEL_LATEST_META: ball_detection/latest.json
+      BALL_MODEL_LOCAL_PATH: /models/ball_detection/best.pt
+      TZ: ${TZ}
     depends_on:
       - redis
       - api
+    volumes:
+      - api_models:/models
   ml:
     build:
       context: ../fan-engage-ml
